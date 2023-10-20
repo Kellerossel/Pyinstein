@@ -1,54 +1,34 @@
 #Bibite_maker
+
+
 import json
 from tkinter import *
 from random import randint
 
-def read():
-    with open('basic.bb8', 'r') as file:
+def printlogo():
+    Logo = [   
+ "         _  __          ____                   _               _    _                            ",
+ "        | |/ /  ___    |  _ \  _ __  ___    __| | _   _   ___ | |_ (_)  ___   _ __   ___         ",
+ " _____  | ' /  / _ \   | |_) || '__// _ \  / _` || | | | / __|| _ || | / _ \ | '_ \ / __|  _____ ",
+ "|_____| | . \ | (_) |  |  __/ | |  | (_) || (_| || |_| || (__ | |_ | || (_) || | | |\__ \ |_____|",
+ "        |_|\_(_)___(_) |_|    |_|   \___/  \____| \____| \___| \__||_| \___/ |_| |_||___/        ",
+ "                                                                                                 ",
+ "                                                                                                 ",
+ "                      --------------- made by Kellerossel ---------------                      "
+        ]
+    for line in Logo:
+        print(line)
+printlogo()
+
+def read(bibname='basic.bb8'):
+    with open(bibname, 'r') as file:
         ddict = json.load(file)
     return dict(ddict)
 
-def write():
+def write(name = 'Pyinstein.bb8'):
     global data
-    with open('new_bibite.bb8', 'w') as file:
+    with open(name, 'w') as file:
         json.dump(data, file, indent=4)
-
-data = read()
-ntext = ''
-for Node in data["brain"]["Nodes"]:
-    desc = Node["Desc"]
-    tname = Node["TypeName"]
-    index = Node["Index"]
-    print(f'{desc}{" "*(16 - len(desc))} -{tname}{" "*(16 - (len(tname)+len(str(index))))} -{index}')
-    ntext += f'{desc}{" "*(16 - len(desc))} -{tname}{" "*(16 - (len(tname)+len(str(index))))} -{index}\n'
-
-vs = ''
-for element in data['transform']:
-    vs += f'transform -{element}\n'
-for element in data['genes']['genes']:
-    vs += f'genes -genes -{element}\n'
-for element in data['genes']:
-    if not element == 'genes':
-        vs += f'genes -{element}\n'
-for element in data['body']['mouth']:
-    vs += f'body -mouth -{element}\n'
-for element in data['body']['stomach']:
-    vs += f'body -stomach -{element}\n'
-for element in data['body']:
-    if not element in ['mouth', 'stomach']:
-        vs += f'body -{element}\n'
-def set(vnames, value):
-    global data
-    for elenum in range(len(vnames)):
-        vnames[elenum] = vnames[elenum].strip('-')
-    if len(vnames) == 1:
-        data[vnames[0]] = value
-    elif len(vnames) == 2:
-        data[vnames[0]][vnames[1]] = value
-    elif len(vnames) == 3:
-        data[vnames[0]][vnames[1]][vnames[2]] = value
-    elif len(vnames) == 4:
-        data[vnames[0]][vnames[1]][vnames[2]][vnames[3]] = value
 
 def new_conn(IN, OUT, WEIGHT, inov = 0):
     global data
