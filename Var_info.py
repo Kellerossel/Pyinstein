@@ -1,62 +1,68 @@
+#Bibite_maker
+
+
 import json
 from tkinter import *
+from random import randint
 
-tk = Tk()
+def printlogo():
+    Logo = [   
+ "         _  __          ____                   _               _    _                            ",
+ "        | |/ /  ___    |  _ \  _ __  ___    __| | _   _   ___ | |_ (_)  ___   _ __   ___         ",
+ " _____  | ' /  / _ \   | |_) || '__// _ \  / _` || | | | / __|| _ || | / _ \ | '_ \ / __|  _____ ",
+ "|_____| | . \ | (_) |  |  __/ | |  | (_) || (_| || |_| || (__ | |_ | || (_) || | | |\__ \ |_____|",
+ "        |_|\_(_)___(_) |_|    |_|   \___/  \____| \____| \___| \__||_| \___/ |_| |_||___/        ",
+ "                                                                                                 ",
+ "                                                                                                 ",
+ "                      --------------- made by Kellerossel ---------------                      "
+        ]
+    for line in Logo:
+        print(line)
+printlogo()
 
-def read():
-    with open('basic.bb8', 'r') as file:
+def read(bibname='basic.bb8'):
+    with open(bibname, 'r') as file:
         ddict = json.load(file)
     return dict(ddict)
 
-data = read()
-ntext = ''
-for Node in data["brain"]["Nodes"]:
-    desc = Node["Desc"]
-    tname = Node["TypeName"]
-    index = Node["Index"]
-    print(f'{desc}{" "*(16 - len(desc))} -{tname}{" "*(16 - (len(tname)+len(str(index))))} -{index}')
-    ntext += f'{desc}{" "*(16 - len(desc))} -{tname}{" "*(16 - (len(tname)+len(str(index))))} -{index}\n'
+def write(name = 'Pyinstein.bb8'):
+    global data
+    with open(name, 'w') as file:
+        json.dump(data, file, indent=4)
 
-vs = ''
-for element in data['transform']:
-    vs += f'transform -{element}\n'
-for element in data['genes']['genes']:
-    vs += f'genes -genes -{element}\n'
-for element in data['genes']:
-    if not element == 'genes':
-        vs += f'genes -{element}\n'
-for element in data['body']['mouth']:
-    vs += f'body -mouth -{element}\n'
-for element in data['body']['stomach']:
-    vs += f'body -stomach -{element}\n'
-for element in data['body']:
-    if not element in ['mouth', 'stomach']:
-        vs += f'body -{element}\n'
-Nodes = Text(tk,
-    width = 40,
-    height = 50,
-    state = "disabled")
-Nodes.configure(state = "normal")
-Nodes.insert(END, ntext)
-Nodes.configure(state = "disabled")
-Nodes.pack( side = "right")
-commands = Text(tk,
-    width = 40,
-    height = 3,
-    state = "disabled")
-commands.configure(state = "normal")
-commands.insert(END, '''
-set: [dictionary index names]|value
-new_conn: input side|output side|weight
-''')
-commands.configure(state = "disabled")
-commands.pack(side = "top")
+def set(vnames, value):
+    global data
+    for elenum in range(len(vnames)):
+        vnames[elenum] = vnames[elenum].strip('-')
+    if len(vnames) == 1:
+        data[vnames[0]] = value
+    elif len(vnames) == 2:
+        data[vnames[0]][vnames[1]] = value
+    elif len(vnames) == 3:
+        data[vnames[0]][vnames[1]][vnames[2]] = value
+    elif len(vnames) == 4:
+        data[vnames[0]][vnames[1]][vnames[2]][vnames[3]] = value
 
-variables = Text(tk,
-    width = 40,
-    height = 47,
-    state = "disabled")
-variables.configure(state = "normal")
-variables.insert(END, vs)
-variables.configure(state = "disabled")
-variables.pack(side = "bottom")
+def new_conn(IN, OUT, WEIGHT, inov = 0):
+    global data
+    if type(IN) == str:
+        for Node in data["brain"]["Nodes"]:
+            if Node["Desc"] == IN:
+                if Node["TypeName"] in ['ReLu',"Input"]:
+                    IN = int(Node["Index"])
+                else:
+                    raise Exception(f'\'{IN}\' is not a type of input.')
+        if type(IN) == str:
+            raise Exception(f'\'{IN}\' is not in Nodes.')
+    if type(OUT) == str:
+        for Node in data["brain"]["Nodes"]:
+            if Node["Desc"] == OUT:
+                if Node["TypeName"] != "Input":
+                    OUT = int(Node["Index"])
+    data["brain"]["Synapses"].append({
+        "Inov": inov,
+        "NodeIn": IN,
+        "NodeOut": OUT,
+        "Weight": WEIGHT,
+        "En": True
+      })
