@@ -35,17 +35,13 @@ def new_conn(IN, OUT, WEIGHT, inov = 0):
     if type(IN) == str:
         for Node in data["brain"]["Nodes"]:
             if Node["Desc"] == IN:
-                if Node["TypeName"] in ['ReLu',"Input"]:
-                    IN = int(Node["Index"])
-                else:
-                    raise Exception(f'\'{IN}\' is not a type of input.')
+                IN = int(Node["Index"])
         if type(IN) == str:
             raise Exception(f'\'{IN}\' is not in Nodes.')
     if type(OUT) == str:
         for Node in data["brain"]["Nodes"]:
             if Node["Desc"] == OUT:
-                if Node["TypeName"] != "Input":
-                    OUT = int(Node["Index"])
+                OUT = int(Node["Index"])
     data["brain"]["Synapses"].append({
         "Inov": inov,
         "NodeIn": IN,
